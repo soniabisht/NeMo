@@ -87,7 +87,80 @@ parser.add_argument(
         "nice to see you how can i help you",
         "find me the distance",
         "what is the destination place",
-        "he will go to paris and i want to come too"
+        "he will go to paris and i want to come too",
+        "yeah you sweat too much you get dehydrated real fast",
+        "yeah",
+        "you find yourself constantly drinking like",
+        "right",
+        "i mean don't get me wrong it's good to drink liquid cause eighty five supposedly eighty five percent of your body's liquid but you know just a hassle",
+        "yep yeah",
+        "just a very big hassle in the summer too much heat you know  Like i'm about to step out after our phone conversation and go take a little stroll",
+        "oh yeah",
+        "yeah i think i'm gonna walk i'm gonna walk you know like thirty blocks or something",
+        "wow",
+        "but walk at a fast pace",
+        "that's a good walk",
+        "you know but at a fast pace",
+        "i do walk in the city sometimes just for work",
+        "oh yeah",
+        "you know just to go to clients",
+        "yeah they make you work yeah over there you walk a lot",
+        "yeah instead of taking the subway sometimes i'll walk",
+        "yeah sounds good",
+        "you know and you walk like a mile two miles",
+        "it's good then you build a stamina like that",
+        "really builds some stamina like that you're always fit",
+        "right",
+        "and nobody call you a weakling or nothing like that"
+    ],
+    help="Example: --queries 'san francisco' --queries 'la'",
+)
+parser.add_argument(
+    "--ground_truth_queries",
+    action='append',
+    default=[
+        'We bought four shirts from the Nvidia gear store in Santa Clara.',
+        'Nvidia is a company.',
+        'Can I help you?',
+        'How are you?',
+        'How\'s the weather today?',
+        'Okay.',
+        'We bought four shirts, one mug and ten thousand Titan Rtx graphics cards. The more you buy, the more you save.',
+        "What is the weather in",
+        "What is the name of", 
+        "The next flight is going to be at", 
+        "Why are they",
+        "How many",
+        "Hell",
+        "Hello",
+        "Nice to see you. How can i help you?",
+        "Find me the distance.",
+        "What is the destination place?",
+        "He will go to Paris and I want to come too.",
+        "Yeah, you sweat too much. You get dehydrated real fast.",
+        "Yeah.",
+        "You find yourself constantly drinking, like",
+        "Right.",
+        "I mean, don't get me wrong, it's good to drink liquid cause eighty five, supposedly, eighty five percent of your body's liquid. But, you know just a hassle.",
+        "Yep, yeah.",
+        "Just a very big hassle in the summer. Too much heat, you know. Like, I'm about to step out after our phone conversation and go take a little stroll.",
+        "Oh, yeah?",
+        "Yeah, I think I'm gonna walk. I'm gonna walk, you know, like thirty blocks or something.",
+        "Wow.",
+        "But walk at a fast pace.",
+        "That's a good walk.",
+        "You know, but at a fast pace.",
+        "I do walk in the city sometimes just for work.",
+        "Oh, yeah.",
+        "You know, just to go to clients.",
+        "Yeah, they make you work. Yeah, over there you walk a lot?",
+        "Yeah, instead of taking the subway, sometimes I'll walk.",
+        "Yeah, sounds good.",
+        "You know, and you walk like a mile, two miles.",
+        "It's good. Then you build a stamina like that.",
+        "Really builds some stamina like that. You're always fit.",
+        "Right.",
+        "And nobody call you a weakling or nothing like that."
     ],
     help="Example: --queries 'san francisco' --queries 'la'",
 )
@@ -184,9 +257,9 @@ if args.mode == 'examples':
     punct_preds = np.argmax(punct_logits, axis=2)
     capit_preds = np.argmax(capit_logits, axis=2)
 
+    correct = 0
+    wrong = 0
     for i, query in enumerate(args.queries):
-        logging.info(f'Query: {query}')
-
         punct_pred = punct_preds[i][subtokens_mask[i] > 0.5]
         capit_pred = capit_preds[i][subtokens_mask[i] > 0.5]
         words = query.strip().split()
@@ -203,7 +276,13 @@ if args.mode == 'examples':
             if punct_label != args.none_label:
                 output += punct_label
             output += ' '
-        logging.info(f'Combined: {output.strip()}\n')
+        if output.strip() == args.ground_truth_queries[i].strip():
+            correct += 1
+        else:
+            wrong += 1
+            print(f'Query: {query}')
+            print(f'Combined: {output.strip()}')
+            print(f'Gr truth: {args.ground_truth_queries[i].strip()}\n')
 
 else:
     text_file = f'{args.data_dir}/text_{args.eval_file_prefix}.txt'
@@ -289,6 +368,7 @@ else:
                 file_for_errors.write('Pred: ' + prediction + '\n')
                 file_for_errors.write('True: ' + ground_truth + '\n\n')
 
-    logging.info(f'Number of correct predictions: {correct}')
-    logging.info(f'Number of wrong predictions: {wrong}')
     logging.info(f'Incorrect examples saved to : {file_for_errors_path}')
+logging.info(f'Number of correct predictions: {correct}')
+logging.info(f'Number of wrong predictions: {wrong}')
+    
