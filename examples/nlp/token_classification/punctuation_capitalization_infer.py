@@ -109,7 +109,8 @@ parser.add_argument(
         "it's good then you build a stamina like that",
         "really builds some stamina like that you're always fit",
         "right",
-        "and nobody call you a weakling or nothing like that"
+        "and nobody call you a weakling or nothing like that",
+        "hi find me a restaurant nearby"
     ],
     help="Example: --queries 'san francisco' --queries 'la'",
 )
@@ -156,7 +157,8 @@ parser.add_argument(
         "It's good. Then you build a stamina like that.",
         "Really builds some stamina like that. You're always fit.",
         "Right.",
-        "And nobody call you a weakling or nothing like that."
+        "And nobody call you a weakling or nothing like that.",
+        "Hi. Find me a restaurant nearby."
     ],
     help="Example: --queries 'san francisco' --queries 'la'",
 )
