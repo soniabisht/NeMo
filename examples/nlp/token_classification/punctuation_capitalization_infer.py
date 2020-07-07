@@ -184,7 +184,10 @@ args = parser.parse_args()
 if not os.path.exists(args.checkpoint_dir):
     raise ValueError(f'Checkpoints folder not found at {args.checkpoint_dir}')
 
-nf = nemo.core.NeuralModuleFactory(log_dir=None)
+if args.mode == 'file':
+    nf = nemo.core.NeuralModuleFactory(log_dir=os.path.join(args.checkpoint_dir, 'infer' + args.data_dir.replace('/', '_')))
+else:
+    nf = nemo.core.NeuralModuleFactory(log_dir=None)
 
 punct_labels_dict_path = os.path.join(args.labels_dict_dir, 'punct_label_ids.csv')
 capit_labels_dict_path = os.path.join(args.labels_dict_dir, 'capit_label_ids.csv')
